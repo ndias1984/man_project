@@ -30,11 +30,8 @@ public class HardwareWriter implements ItemWriter<TruckDTO> {
 
 	@Override
 	public void write(List<? extends TruckDTO> truckData) throws Exception {
-		
-		
-		
+
 		if (truckData != null && truckData.size() > 0) {
-			
 
 			List<TruckConfiguration> truckConfigsDB = this.repo.findByVINs(getUniqueVINs(truckData));
 			Set<TruckConfiguration> truckConfigs = new HashSet<TruckConfiguration>();

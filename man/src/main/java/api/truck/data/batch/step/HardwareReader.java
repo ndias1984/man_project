@@ -14,28 +14,26 @@ import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.mapping.FieldSetMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.batch.item.file.transform.LineTokenizer;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
 
 import api.truck.data.dto.TruckDTO;
+import api.truck.data.utils.FileUtils;
 
 public class HardwareReader implements ItemReader<TruckDTO> {
 	
 	Logger logger = Logger.getLogger(HardwareReader.class.getName());
-	
+
 	@Bean
-    public ItemReader<TruckDTO> itemReader() {
+    public ItemReader<TruckDTO> itemReader(ApplicationContext applicationContext) {
 		FlatFileItemReader<TruckDTO> csvFileReader = new FlatFileItemReader<>();
-		ClassLoader cl = this.getClass().getClassLoader(); 
-		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(cl);
 		Resource[] resources;
 		Resource hardwareResource;
 		try {
-			resources = resolver.getResources("classpath*:/to_be_processed/hard_*.csv");
+			resources = FileUtils.renameFile("hardware", applicationContext);
 			hardwareResource = resources != null && resources.length > 0 ? resources[0] : null;
-			
+
 			if (hardwareResource != null) {
 		        csvFileReader.setResource(resources != null && resources.length > 0 ? resources[0] : null);
 		        
@@ -48,7 +46,7 @@ public class HardwareReader implements ItemReader<TruckDTO> {
 		} catch (IOException e) {
 			logger.warning("No files were found...move along...");
 		}
- 
+		csvFileReader.setStrict(false);
         return csvFileReader;
     }
 	

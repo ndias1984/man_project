@@ -14,45 +14,41 @@ import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.mapping.FieldSetMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.batch.item.file.transform.LineTokenizer;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
 
 import api.truck.data.dto.TruckDTO;
+import api.truck.data.utils.FileUtils;
 
 public class SoftwareReader implements ItemReader<TruckDTO> {
 	
 	Logger logger = Logger.getLogger(SoftwareReader.class.getName());
 	
 	@Bean
-    public ItemReader<TruckDTO> itemReader() {
+    public ItemReader<TruckDTO> itemReader(ApplicationContext applicationContext) {
 		FlatFileItemReader<TruckDTO> csvFileReader = new FlatFileItemReader<>();
-		ClassLoader cl = this.getClass().getClassLoader(); 
-		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(cl);
 		Resource[] resources;
 		Resource softwareResource;
 		try {
-			resources = resolver.getResources("classpath*:/to_be_processed/soft_*.csv");
+			resources = FileUtils.renameFile("software", applicationContext);
 			softwareResource = resources != null && resources.length > 0 ? resources[0] : null;
-			
+
 			if (softwareResource != null) {
 		        csvFileReader.setResource(resources != null && resources.length > 0 ? resources[0] : null);
-		 
-		        LineMapper<TruckDTO> truckSoftwareLineMapper = createsoftwareTruckLineMapper();
+		        
+		        LineMapper<TruckDTO> truckSoftwareLineMapper = createSoftwareTruckLineMapper();
 		        csvFileReader.setLineMapper(truckSoftwareLineMapper);	
-			} else {
-				logger.info("No software file to read...");
 			}
 			
 		} catch (IOException e) {
 			logger.warning("No files were found...move along...");
 		}
- 
+		csvFileReader.setStrict(false);
         return csvFileReader;
     }
 	
-	private LineMapper<TruckDTO> createsoftwareTruckLineMapper() {
+	private LineMapper<TruckDTO> createSoftwareTruckLineMapper() {
         DefaultLineMapper<TruckDTO> truckSoftwareLineMapper = new DefaultLineMapper<>();
  
         LineTokenizer truckLineTokenizer = createTruckLineTokenizer();

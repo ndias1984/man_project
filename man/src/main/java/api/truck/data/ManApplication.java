@@ -26,7 +26,7 @@ public class ManApplication  {
 		SpringApplication.run(ManApplication.class, args);
 	}
 	
-	//Read the man truck data in the background with a 15 minute interval
+	//Read the man truck data in the background with a 1 minute interval
 	@Scheduled(cron = "0 */1 * * * ?")
     public void perform() throws Exception 
     {
