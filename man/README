@@ -1,0 +1,29 @@
+#First step
+-> Run MAN_DDL.sql script (root of the project) in a MYSQL DB
+
+#Second Step
+-> Use build_and_run.bat to package and run the application
+-> You can do that by clicking on the bat file, or go to the root of the project and execute the bat from there.
+
+#Docker Step that didn't work (USE SECOND STEP)
+-> 
+docker build -t man .
+docker-compose up 
+
+REASON: For some reason the docker-compose file is not working locally, since it gets errors 
+when trying to connect to MySQL in port 3306. Couldn't pass this problem in my local PC. The files are also available (Dockerfile and docker-compose.yml)
+
+#The SpringBoot application is now running, providing two GET APIs and Running a SpringBatch JOB in the background
+
+#The application will create two folders in user.home location with the names to_be_processed and processed
+-> Manualy put one hard_* file, one soft_* file or both in to_be_processed folder
+
+#Check in the log the job processing all data on those files
+
+-> Those files will be moved to the processed folder with the name YYYYMMSSHHMMSS_hardware_file.csv or YYYYMMSSHHMMSS_software_file.csv
+-> Add two more files or one (soft or hard) to folder to_be_processed
+
+Test the APIs:
+Open a Postman and create a GET request with http://localhost:8080/fota/vehicles/3C3CFFER4ET929645/incompatible for example
+Open a Postamn and create a GET request with http://localhost:8080/fota/vehicles/3C3CFFER4ET929645/installable for example
+
